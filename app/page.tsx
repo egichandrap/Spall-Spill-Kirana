@@ -29,46 +29,75 @@ export default function Home() {
   );
 
   return (
-    <main className="min-h-screen bg-gray-950 text-white p-6">
-      <div className="max-w-xl mx-auto">
+    <main
+      className="min-h-screen text-white p-6 bg-cover bg-center bg-fixed bg-no-repeat"
+      style={{ backgroundImage: "url('/background.jpeg')" }}
+    >
+      {/* Soft pastel overlay */}
+      <div className="fixed inset-0 bg-pink-300/20 backdrop-blur-[2px] pointer-events-none" />
 
-        <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold">🔥 Spall Spill Link 🔥</h1>
-          <p className="text-gray-400 text-sm">By Ibuk Elzein</p>
+      <div className="relative z-10 max-w-xl mx-auto">
+        {/* Cute Header */}
+        <div className="text-center mb-8">
+          <div className="inline-block p-4 rounded-3xl bg-white/30 backdrop-blur-md border border-white/40 shadow-xl mb-4">
+            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-sm">
+              🌸 Spall Spill 🌸
+            </h1>
+          </div>
+          <p className="text-white/90 text-sm font-medium drop-shadow-md">
+            💕 Link-link gemes pilihan hati 💕
+          </p>
         </div>
 
-        <input
-          type="text"
-          placeholder="Cari link..."
-          className="w-full p-3 mb-6 rounded-xl bg-gray-800 border border-gray-700"
-          onChange={(e) => setSearch(e.target.value)}
-        />
+        {/* Cute Search Input */}
+        <div className="relative mb-8">
+          <input
+            type="text"
+            placeholder="Cari link..."
+            className="w-full p-4 pl-12 rounded-2xl bg-white/40 backdrop-blur-md border-2 border-white/50 text-gray-800 placeholder-gray-500 shadow-lg focus:outline-none focus:ring-4 focus:ring-pink-300/50 focus:border-pink-400 transition-all"
+            onChange={(e) => setSearch(e.target.value)}
+          />
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-xl">
+            🔎
+          </span>
+        </div>
 
+        {/* Links Grid */}
         <div className="flex flex-col gap-4">
           {filtered.map((item, i) => (
             <a
               key={i}
               href={item.link}
               target="_blank"
-              className="p-4 rounded-2xl bg-gray-800 hover:bg-gray-700 transition shadow-lg hover:scale-[1.02]"
+              rel="noopener noreferrer"
+              className="group p-5 rounded-3xl bg-white/40 backdrop-blur-md border border-white/50 shadow-lg hover:shadow-2xl hover:bg-white/60 transition-all duration-300 hover:-translate-y-1"
             >
               {item.image && (
-              <img
-                  src={item.image}
-                  alt={item.title}
-                  className="w-full h-40 object-cover rounded-xl mb-2"
-                />
+                <div className="overflow-hidden rounded-2xl mb-3">
+                  <img
+                    src={item.image}
+                    alt={item.title}
+                    className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
               )}
 
-              <div className="font-semibold text-lg">{item.title}</div>
+              <div className="flex items-start justify-between gap-3">
+                <div className="font-bold text-lg text-gray-800 group-hover:text-pink-600 transition-colors">
+                  {item.title}
+                </div>
+                <span className="text-xl group-hover:rotate-12 transition-transform">
+                  💕
+                </span>
+              </div>
 
               {item.category && (
-                <span className="text-xs bg-blue-500 px-2 py-1 rounded">
+                <span className="inline-block mt-2 text-xs font-semibold bg-gradient-to-r from-pink-400 to-purple-400 text-white px-3 py-1.5 rounded-full shadow-sm">
                   {item.category}
                 </span>
               )}
 
-              <div className="text-sm text-gray-400 truncate">
+              <div className="text-sm text-gray-600 truncate mt-2">
                 {item.link}
               </div>
             </a>
@@ -76,11 +105,22 @@ export default function Home() {
         </div>
 
         {filtered.length === 0 && (
-          <p className="text-center text-gray-500 mt-10">
-            Link tidak ditemukan
-          </p>
+          <div className="text-center mt-12 p-8 rounded-3xl bg-white/30 backdrop-blur-md border border-white/40">
+            <p className="text-4xl mb-2">🥺</p>
+            <p className="text-white/80 font-medium">
+              Link tidak ditemukan
+            </p>
+          </div>
         )}
+
+        {/* Cute Footer */}
+        <div className="text-center mt-10 pb-6">
+          <p className="text-white/70 text-xs">
+            Made with 💖 for Ibuk Elzein
+          </p>
+        </div>
       </div>
     </main>
   );
 }
+
