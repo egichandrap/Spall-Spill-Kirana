@@ -33,8 +33,8 @@ export default function Home() {
       <div className="max-w-xl mx-auto">
 
         <div className="text-center mb-6">
-          <h1 className="text-3xl font-bold">🔥 Spall Spill Link</h1>
-          <p className="text-gray-400 text-sm">Auto update dari spreadsheet</p>
+          <h1 className="text-3xl font-bold">🔥 Spall Spill Link 🔥</h1>
+          <p className="text-gray-400 text-sm">By Ibuk Elzein</p>
         </div>
 
         <input
