@@ -1,8 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
 
+interface LinkItem {
+  title: string;
+  link: string;
+  image?: string;
+  category?: string;
+}
+
 export default function Home() {
-  const [links, setLinks] = useState([]);
+  const [links, setLinks] = useState<LinkItem[]>([]);
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -46,8 +53,9 @@ export default function Home() {
               className="p-4 rounded-2xl bg-gray-800 hover:bg-gray-700 transition shadow-lg hover:scale-[1.02]"
             >
               {item.image && (
-                <img
+              <img
                   src={item.image}
+                  alt={item.title}
                   className="w-full h-40 object-cover rounded-xl mb-2"
                 />
               )}
