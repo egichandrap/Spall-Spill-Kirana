@@ -41,8 +41,8 @@ export default function Home() {
         {/* Cute Header */}
         <div className="text-center mb-8">
           <div className="inline-block p-4 rounded-3xl bg-white/30 backdrop-blur-md border border-white/40 shadow-xl mb-4">
-            <h1 className="text-4xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-sm">
-              🌸 Spall Spill 🌸
+            <h1 className="text-sm sm:text-lg md:text-2xl lg:text-4xl font-extrabold bg-gradient-to-r from-pink-500 via-purple-500 to-indigo-500 bg-clip-text text-transparent drop-shadow-sm whitespace-nowrap">
+              🌸 Spall Spill By Ibuk Elzein 🌸
             </h1>
           </div>
           <p className="text-white/90 text-sm font-medium drop-shadow-md">
