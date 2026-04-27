@@ -10,9 +10,10 @@ export async function GET() {
   const rows = text.split("\n").slice(1);
 
   const data = rows.map((row) => {
-    const [title, link, image, category] = row.split(",");
+    const [no, title, link, image, category] = row.split(",");
 
     return {
+      no: no?.trim(),
       title: title?.trim(),
       link: link?.trim(),
       image: image?.trim(),

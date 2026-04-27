@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 
 interface LinkItem {
+  no: string;
   title: string;
   link: string;
   image?: string;
@@ -70,14 +71,19 @@ export default function Home() {
               href={item.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="group p-5 rounded-3xl bg-white/40 backdrop-blur-md border border-white/50 shadow-lg hover:shadow-2xl hover:bg-white/60 transition-all duration-300 hover:-translate-y-1"
+              className="group relative p-5 rounded-3xl bg-white/40 backdrop-blur-md border border-white/50 shadow-lg hover:shadow-2xl hover:bg-white/60 transition-all duration-300 hover:-translate-y-1"
             >
+              {item.no && (
+                <div className="absolute top-3 left-3 z-10 w-8 h-8 flex items-center justify-center rounded-full bg-gradient-to-r from-pink-500 to-purple-500 text-white text-sm font-bold shadow-md">
+                  {item.no}
+                </div>
+              )}
               {item.image && (
-                <div className="overflow-hidden rounded-2xl mb-3">
+                <div className="overflow-hidden rounded-2xl mb-3 aspect-square w-full">
                   <img
                     src={item.image}
                     alt={item.title}
-                    className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
               )}
