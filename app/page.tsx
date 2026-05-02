@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 
 interface LinkItem {
   no: string;
@@ -24,40 +24,90 @@ export default function Home() {
   const [pagination, setPagination] = useState<PaginationInfo | null>(null);
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<string[]>([]);
+  
+  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const isMountedRef = useRef(true);
 
   const limit = 10;
 
   const loadLinks = async (page: number, category: string = "") => {
+    if (!isMountedRef.current) return;
+    
     setLoading(true);
     try {
       const res = await fetch(`/api/links?page=${page}&limit=${limit}&category=${encodeURIComponent(category)}`);
+      if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
+      
+      if (!isMountedRef.current) return;
+      
       setLinks(json.data);
       setPagination(json.pagination);
       setCategories(json.categories || []);
     } catch (error) {
       console.error("Error loading links:", error);
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
   };
 
   useEffect(() => {
+    isMountedRef.current = true;
+    
     loadLinks(currentPage, selectedCategory);
-    const interval = setInterval(() => loadLinks(currentPage, selectedCategory), 10000);
-    return () => clearInterval(interval);
+    
+    // Clear any existing interval
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+    
+    // Set new interval
+    intervalRef.current = setInterval(() => {
+      if (isMountedRef.current) {
+        loadLinks(currentPage, selectedCategory);
+      }
+    }, 10000);
+    
+    return () => {
+      isMountedRef.current = false;
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    };
   }, [currentPage, selectedCategory]);
 
   const handleSearch = (value: string) => {
     setSearch(value);
     setCurrentPage(1);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
     loadLinks(1, selectedCategory);
+    
+    intervalRef.current = setInterval(() => {
+      if (isMountedRef.current) {
+        loadLinks(1, selectedCategory);
+      }
+    }, 10000);
   };
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
     setCurrentPage(1);
+    
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
     loadLinks(1, category);
+    
+    intervalRef.current = setInterval(() => {
+      if (isMountedRef.current) {
+        loadLinks(1, category);
+      }
+    }, 10000);
   };
 
   const filtered = links.filter((item) => {
@@ -103,6 +153,7 @@ export default function Home() {
           <input
             type="text"
             placeholder="Cari link..."
+            value={search}
             className="w-full p-4 pl-12 rounded-2xl bg-white/40 backdrop-blur-md border-2 border-white/50 text-gray-800 placeholder-gray-500 shadow-lg focus:outline-none focus:ring-4 focus:ring-pink-300/50 focus:border-pink-400 transition-all"
             onChange={(e) => handleSearch(e.target.value)}
           />
@@ -111,21 +162,35 @@ export default function Home() {
           </span>
         </div>
 
-        {/* Category Filter */}
+        {/* Category Filter - Bubble/Chip Style */}
         {categories.length > 0 && (
           <div className="mb-6">
-            <select
-              value={selectedCategory}
-              onChange={(e) => handleCategoryChange(e.target.value)}
-              className="w-full p-4 rounded-2xl bg-white/40 backdrop-blur-md border-2 border-white/50 text-gray-800 shadow-lg focus:outline-none focus:ring-4 focus:ring-pink-300/50 focus:border-pink-400 transition-all cursor-pointer"
-            >
-              <option value="">Semua Kategori</option>
+            <div className="flex flex-wrap gap-2 justify-center">
+              {/* All Categories Button */}
+              <button
+                onClick={() => handleCategoryChange("")}
+                className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+                  selectedCategory === ""
+                    ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg"
+                    : "bg-white/40 backdrop-blur-md border border-white/50 text-gray-800 hover:bg-white/60"
+                }`}
+              >
+                🌟 Semua
+              </button>
               {categories.map((cat) => (
-                <option key={cat} value={cat}>
+                <button
+                  key={cat}
+                  onClick={() => handleCategoryChange(cat)}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 ${
+                    selectedCategory === cat
+                      ? "bg-gradient-to-r from-pink-500 to-purple-500 text-white shadow-lg"
+                      : "bg-white/40 backdrop-blur-md border border-white/50 text-gray-800 hover:bg-white/60"
+                  }`}
+                >
                   {cat}
-                </option>
+                </button>
               ))}
-            </select>
+            </div>
           </div>
         )}
 
