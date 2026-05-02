@@ -30,12 +30,15 @@ export default function Home() {
 
   const limit = 10;
 
-  const loadLinks = async (page: number, category: string = "") => {
+  const loadLinks = async (page: number, category: string = "", isBackgroundRefresh: boolean = false) => {
     if (!isMountedRef.current) return;
     
-    setLoading(true);
+    // Only show loading indicator for user-initiated actions, not background refresh
+    if (!isBackgroundRefresh) {
+      setLoading(true);
+    }
+    
     try {
-      // Add timestamp for cache busting
       const timestamp = Date.now();
       const res = await fetch(`/api/links?page=${page}&limit=${limit}&category=${encodeURIComponent(category)}&t=${timestamp}`, {
         cache: "no-store",
@@ -57,7 +60,7 @@ export default function Home() {
     } catch (error) {
       console.error("Error loading links:", error);
     } finally {
-      if (isMountedRef.current) {
+      if (isMountedRef.current && !isBackgroundRefresh) {
         setLoading(false);
       }
     }
@@ -66,15 +69,17 @@ export default function Home() {
   useEffect(() => {
     isMountedRef.current = true;
     
-    loadLinks(currentPage, selectedCategory);
+    // Initial load - show loading
+    loadLinks(currentPage, selectedCategory, false);
     
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
     
+    // Auto-refresh every 10 seconds WITHOUT showing loading indicator
     intervalRef.current = setInterval(() => {
       if (isMountedRef.current) {
-        loadLinks(currentPage, selectedCategory);
+        loadLinks(currentPage, selectedCategory, true);
       }
     }, 10000);
     
@@ -93,11 +98,11 @@ export default function Home() {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
-    loadLinks(1, selectedCategory);
+    loadLinks(1, selectedCategory, false);
     
     intervalRef.current = setInterval(() => {
       if (isMountedRef.current) {
-        loadLinks(1, selectedCategory);
+        loadLinks(currentPage, selectedCategory, true);
       }
     }, 10000);
   };
@@ -109,11 +114,11 @@ export default function Home() {
     if (intervalRef.current) {
       clearInterval(intervalRef.current);
     }
-    loadLinks(1, category);
+    loadLinks(1, category, false);
     
     intervalRef.current = setInterval(() => {
       if (isMountedRef.current) {
-        loadLinks(1, category);
+        loadLinks(currentPage, selectedCategory, true);
       }
     }, 10000);
   };
