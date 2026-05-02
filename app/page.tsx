@@ -35,7 +35,17 @@ export default function Home() {
     
     setLoading(true);
     try {
-      const res = await fetch(`/api/links?page=${page}&limit=${limit}&category=${encodeURIComponent(category)}`);
+      // Add timestamp for cache busting
+      const timestamp = Date.now();
+      const res = await fetch(`/api/links?page=${page}&limit=${limit}&category=${encodeURIComponent(category)}&t=${timestamp}`, {
+        cache: "no-store",
+        headers: {
+          "Cache-Control": "no-cache, no-store, must-revalidate",
+          "Pragma": "no-cache",
+          "Expires": "0",
+        },
+      });
+      
       if (!res.ok) throw new Error("Failed to fetch");
       const json = await res.json();
       

@@ -1,3 +1,6 @@
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export async function GET(request) {
   const { searchParams } = new URL(request.url);
   const page = parseInt(searchParams.get("page")) || 1;
@@ -8,6 +11,11 @@ export async function GET(request) {
 
   const res = await fetch(sheetURL, {
     cache: "no-store",
+    headers: {
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0",
+    },
   });
 
   const text = await res.text();
@@ -26,10 +34,8 @@ export async function GET(request) {
     };
   }).filter((item) => item.title && item.link);
 
-  // Get all unique categories
   const allCategories = [...new Set(allLinks.map((item) => item.category).filter(Boolean))];
 
-  // Filter by category if provided
   if (category) {
     allLinks = allLinks.filter((item) => item.category === category);
   }
@@ -40,7 +46,7 @@ export async function GET(request) {
   const end = start + limit;
   const data = allLinks.slice(start, end);
 
-  return Response.json({
+  return new Response(JSON.stringify({
     data,
     pagination: {
       totalLinks,
@@ -49,5 +55,13 @@ export async function GET(request) {
       limit,
     },
     categories: allCategories,
+  }), {
+    status: 200,
+    headers: {
+      "Cache-Control": "no-cache, no-store, must-revalidate",
+      "Pragma": "no-cache",
+      "Expires": "0",
+      "Content-Type": "application/json",
+    },
   });
 }
